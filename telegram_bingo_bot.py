@@ -4,7 +4,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 # ENTER YOUR BOT TOKEN HERE
-TOKEN = "8551480846:AAFMWCSfF5xx1psTK1a5OVyfzIWjkSjNOH8"
+import os
+TOKEN = os.environ.get("8551480846:AAFMWCSfF5xx1psTK1a5OVyfzIWjkSjNOH8")
 
 users = {}
 players = {}
