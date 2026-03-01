@@ -1,0 +1,5 @@
+{
+  "name": "ethiopian-bingo-bot",
+  "type": "python",
+  "start": "python telegram_bingo_bot.py"
+}
