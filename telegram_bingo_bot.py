@@ -1,17 +1,17 @@
-import random
 import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, ContextTypes
 
-# ENTER YOUR BOT TOKEN HERE
-import os
-TOKEN = os.environ.get("8551480846:AAFMWCSfF5xx1psTK1a5OVyfzIWjkSjNOH8")
+# Bot token directly
+TOKEN = "8551480846:AAFMWCSfF5xx1psTK1a5OVyfzIWjkSjNOH8"
 
+# Game data
 users = {}
 players = {}
 called_numbers = []
 game_running = False
 
+# Function to generate bingo number
 def make_bingo_number(n):
     if 1 <= n <= 15:
         return f"B-{n}"
@@ -23,37 +23,31 @@ def make_bingo_number(n):
         return f"G-{n}"
     elif 61 <= n <= 75:
         return f"O-{n}"
+    else:
+        return None
 
+# /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "Welcome to Ethiopian Bingo bot 🎯\n\nUse /startgame to start a demo game."
-    )
+    await update.message.reply_text("Welcome to Ethiopian Bingo Bot! Type /join to play.")
 
-async def startgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global game_running, called_numbers
-    game_running = True
-    called_numbers = []
-    await update.message.reply_text("Bingo game started ✅")
+# /join command
+async def join(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.message.from_user.id
+    if user_id in players:
+        await update.message.reply_text("You have already joined the game!")
+    else:
+        players[user_id] = {"name": update.message.from_user.first_name}
+        await update.message.reply_text(f"{update.message.from_user.first_name} joined the game!")
 
-async def call(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global called_numbers, game_running
-    if not game_running:
-        await update.message.reply_text("Game is not running.")
-        return
-    remaining = list(set(range(1, 76)) - set(called_numbers))
-    if not remaining:
-        await update.message.reply_text("All numbers are called.")
-        return
-    num = random.choice(remaining)
-    called_numbers.append(num)
-    await update.message.reply_text(f"Next number: {make_bingo_number(num)}")
-
+# Main function
 def main():
     app = Application.builder().token(TOKEN).build()
+
+    # Register handlers
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("startgame", startgame))
-    app.add_handler(CommandHandler("call", call))
-    print("Bingo bot started...")
+    app.add_handler(CommandHandler("join", join))
+
+    print("Bot is starting...")
     app.run_polling()
 
 if __name__ == "__main__":
